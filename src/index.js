@@ -3,6 +3,7 @@ const http = require('http')
 
 const express = require('express')
 const socketio = require('socket.io')
+const Filter = require('bad-words')
 
 let publicPath = path.join(__dirname , '../public')
 
@@ -18,11 +19,17 @@ io.on('connection' , (socket) => {
 
     socket.broadcast.emit('message','a new user joined the group')
     
-    socket.on('sentmessage', (msg) => {
+    socket.on('sentmessage', (msg ,cb) => {
+        let filter = new Filter()
+        if(filter.isProfane(msg)){
+            return cb('proganity is not allowed!')
+        }
         io.emit('message' , msg)
+        cb()
     })
-    socket.on('sharelocation', (location) => {
+    socket.on('sharelocation', (location , cb) => {
         io.emit('message' , location)
+        cb();
     })
 
     socket.on('disconnect' , () => {
