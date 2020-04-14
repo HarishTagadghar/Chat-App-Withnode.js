@@ -28,7 +28,7 @@ io.on('connection' , (socket) => {
         cb()
     })
     socket.on('sharelocation', (location , cb) => {
-        io.emit('message' , location)
+        io.emit('location-message' , location)
         cb();
     })
 
