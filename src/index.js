@@ -5,6 +5,8 @@ const express = require('express')
 const socketio = require('socket.io')
 const Filter = require('bad-words')
 
+const {generateMessage , generateLocation} = require('./utils/messages')
+
 let publicPath = path.join(__dirname , '../public')
 
 let app = express()
@@ -15,25 +17,25 @@ app.use(express.static(publicPath))
 io.on('connection' , (socket) => {
     console.log(`new connection`);
 
-    socket.emit('message' , 'Welcome!');
+    socket.emit('message' , generateMessage('Welcome!'));
 
-    socket.broadcast.emit('message','a new user joined the group')
+    socket.broadcast.emit('message',generateMessage('a new user joined the group'))
     
     socket.on('sentmessage', (msg ,cb) => {
         let filter = new Filter()
         if(filter.isProfane(msg)){
             return cb('proganity is not allowed!')
         }
-        io.emit('message' , msg)
+        io.emit('message' ,generateMessage(msg))
         cb()
     })
     socket.on('sharelocation', (location , cb) => {
-        io.emit('location-message' , location)
+        io.emit('location-message' , generateLocation(location))
         cb();
     })
 
     socket.on('disconnect' , () => {
-        io.emit('message' , 'a user left the group')
+        io.emit('message' , generateMessage('a user left the group'))
     })
 
 })

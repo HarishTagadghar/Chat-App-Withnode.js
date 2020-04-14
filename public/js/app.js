@@ -10,7 +10,8 @@ let $location_template = document.querySelector('#location-template').innerHTML
 socket.on('message' , (msg)=> {
     console.log(msg);
     let html = Mustache.render($message_template , {
-        message:msg
+        message:msg.text,
+        createdAt:moment(msg.createdAt).format('h:mm a')
     })
     $message.insertAdjacentHTML('beforeend' , html)
     
@@ -19,7 +20,8 @@ socket.on('message' , (msg)=> {
 socket.on('location-message' , (url) => {
     console.log(url);
     let html = Mustache.render($location_template, {
-        url:url
+        url:url.url,
+        createdAt:moment(url.createdAt).format('h:mm a')
     })
     $message.insertAdjacentHTML('beforeend' , html)
 })
