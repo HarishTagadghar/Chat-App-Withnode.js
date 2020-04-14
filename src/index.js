@@ -21,6 +21,9 @@ io.on('connection' , (socket) => {
     socket.on('sentmessage', (msg) => {
         io.emit('message' , msg)
     })
+    socket.on('sharelocation', (location) => {
+        io.emit('message' , location)
+    })
 
     socket.on('disconnect' , () => {
         io.emit('message' , 'a user left the group')
