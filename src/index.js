@@ -6,6 +6,7 @@ const socketio = require('socket.io')
 const Filter = require('bad-words')
 
 const {generateMessage , generateLocation} = require('./utils/messages')
+const {addUser,removeUser,getUser,getUserRoom } = require('./utils/users')
 
 let publicPath = path.join(__dirname , '../public')
 
@@ -16,26 +17,55 @@ app.use(express.static(publicPath))
 
 io.on('connection' , (socket) => {
     console.log(`new connection`);
+    
+    socket.on('join' , (object , cb) => {
+        let {error , user} = addUser({id: socket.id , ...object })
+        if(error) {
+            return cb(error)
+        }
+        socket.join(user.room)
+        socket.emit('message' , generateMessage('Welcome!'));
 
-    socket.emit('message' , generateMessage('Welcome!'));
+        socket.broadcast.to(user.room).emit('message',generateMessage(`${user.username} as joined the room`))
+        io.to(user.room).emit('userData' , {
+            room:user.room,
+            users:getUserRoom(user.room)
+        })
+        cb()
 
-    socket.broadcast.emit('message',generateMessage('a new user joined the group'))
+    })
+
+
+
+  
     
     socket.on('sentmessage', (msg ,cb) => {
+        let user = getUser(socket.id)
         let filter = new Filter()
         if(filter.isProfane(msg)){
             return cb('proganity is not allowed!')
         }
-        io.emit('message' ,generateMessage(msg))
+        io.emit('message' ,generateMessage(user.username,msg))
         cb()
     })
     socket.on('sharelocation', (location , cb) => {
-        io.emit('location-message' , generateLocation(location))
+        let user = getUser(socket.id)
+
+        io.emit('location-message' , generateLocation(user.username,location))
         cb();
     })
 
     socket.on('disconnect' , () => {
-        io.emit('message' , generateMessage('a user left the group'))
+
+        let user = removeUser(socket.id)
+        if(user){
+            io.to(user[0].room).emit('message' , generateMessage(`${user[0].username} has left!`))
+            io.to(user.room).emit('userData' , {
+                room:user.room,
+                users:getUserRoom(user.room)
+            })
+            
+ }
     })
 
 })
