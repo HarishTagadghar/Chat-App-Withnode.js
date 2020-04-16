@@ -181,3 +181,25 @@ button:disabled {
     font-weight: 300;
     padding: 12px 24px 0 24px;
 }
+
+@media only screen and (max-width: 600px) {
+
+    .compose {
+        margin-top: 16px;
+        padding: 20px;
+    }
+    
+    .compose form {
+        margin-right: 15px;
+    }
+    
+    .compose input {
+        border: 1px solid #eeeeee;
+        width: 100px;
+    }
+    
+.btn-2{
+    margin-top: 5px;
+    margin-right: 15px;
+}
+}

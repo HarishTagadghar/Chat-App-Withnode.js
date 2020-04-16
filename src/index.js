@@ -3,7 +3,7 @@ const http = require('http')
 
 const express = require('express')
 const socketio = require('socket.io')
-const Filter = require('bad-words')
+// const Filter = require('bad-words')
 
 const {generateMessage , generateLocation} = require('./utils/messages')
 const {addUser,removeUser,getUser,getUserRoom } = require('./utils/users')
@@ -41,10 +41,10 @@ io.on('connection' , (socket) => {
     
     socket.on('sentmessage', (msg ,cb) => {
         let user = getUser(socket.id)
-        let filter = new Filter()
-        if(filter.isProfane(msg)){
-            return cb('proganity is not allowed!')
-        }
+        // let filter = new Filter()
+        // if(filter.isProfane(msg)){
+        //     return cb('proganity is not allowed!')
+        // }
         io.emit('message' ,generateMessage(user.username,msg))
         cb()
     })
