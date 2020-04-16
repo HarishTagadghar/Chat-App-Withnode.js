@@ -60,9 +60,9 @@ io.on('connection' , (socket) => {
         let user = removeUser(socket.id)
         if(user){
             io.to(user[0].room).emit('message' , generateMessage(`${user[0].username} has left!`))
-            io.to(user.room).emit('userData' , {
-                room:user.room,
-                users:getUserRoom(user.room)
+            io.to(user[0].room).emit('userData' , {
+                room:user[0].room,
+                users:getUserRoom(user[0].room)
             })
             
  }
